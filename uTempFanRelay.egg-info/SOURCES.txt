@@ -1,0 +1,15 @@
+MANIFEST.in
+README.md
+setup.py
+octoprint_uTempFanRelay/__init__.py
+octoprint_uTempFanRelay/static/css/uTempFanRelay.css
+octoprint_uTempFanRelay/static/js/uTempFanRelay.js
+octoprint_uTempFanRelay/static/less/uTempFanRelay.less
+octoprint_uTempFanRelay/templates/README.txt
+uTempFanRelay.egg-info/PKG-INFO
+uTempFanRelay.egg-info/SOURCES.txt
+uTempFanRelay.egg-info/dependency_links.txt
+uTempFanRelay.egg-info/entry_points.txt
+uTempFanRelay.egg-info/not-zip-safe
+uTempFanRelay.egg-info/requires.txt
+uTempFanRelay.egg-info/top_level.txt

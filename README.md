@@ -5,7 +5,7 @@ Control the "always on" fan that cools the hot end of your printer.
 2. connect it to a relay (normally closed contact suggested, but it is configurable)
 3. connect the relay driving pin to the RPi (default is GPIO 14, but it is configurable)
 
-<image src=instructions.jpg width=80%></image>
+<image src=Instructions.jpg width=80%></image>
 
 You are ready to go: the tool fan will be on only when you heat the part and anyways when the temperature is higher than a configurable parameter in the plugin setup page.
 Use a temperature well below the glass temperature of your filament!!! (i.e. 40 degrees Celsius or below)

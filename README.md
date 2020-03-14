@@ -27,3 +27,7 @@ GPIO pin: which pin of the Raspberry PI drives the relay
 Normally closed/normally Open: tell the Raspberry how you connected the relay
 
 Temperature threshold: temperature above which the fan is on. Keep it under your filament glass temperature (i.e. do not exceed 40 degrees Celsius)
+
+Screenshot of the settings page:
+
+<image src=screenshot.jpg width=80%></image>

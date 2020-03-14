@@ -2,7 +2,7 @@
 
 Control the "always on" fan that cools the cooling part of the hot end of your printer.
 
-<image src=Fan.jpg width=80%></image>
+<image src=Fan.png width=80%></image>
 
 ## Disclaimers
 

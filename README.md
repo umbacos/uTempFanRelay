@@ -3,7 +3,6 @@
 Control the "always on" fan that cools the cooling part of the hot end of your printer.
 
 <image src=Fan.png width=30%></image>
-![Cool end fan](Fan.png =800x) 
 
 ## Disclaimers
 

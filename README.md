@@ -6,7 +6,7 @@ Control the "always on" fan that cools the cooling part of the hot end of your p
 
 ## Disclaimers
 
-I have been using this on my Creality Ender 3 for the last two months and it works like a charm. If you decide to use it as well, you need to:
+I have been using this on my Creality Ender 3 for the last year and it works like a charm. If you decide to use it as well, you need to:
 <UL>
 <LI>know how your 3D printer works,</LI>
 <LI>have basic understanding of electronics and electrical circuits.</LI>

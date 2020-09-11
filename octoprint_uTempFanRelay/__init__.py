@@ -186,6 +186,7 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
         )
 
 __plugin_name__ = "uTempFanRelay"
+__plugin_pythoncompat__ = ">=2.7,<4"
 __plugin_implementation__ = UtempfanrelayPlugin()
 __plugin_hooks__ = {
             "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,

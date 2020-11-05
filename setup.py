@@ -3,7 +3,7 @@
 plugin_identifier = "uTempFanRelay"
 plugin_package = "octoprint_uTempFanRelay"
 plugin_name = "uTempFanRelay"
-plugin_version = "0.2.0"
+plugin_version = "0.2.1"
 plugin_description = """A hotend tool fan temperature-controlled relay"""
 plugin_author = "umbacos"
 plugin_author_email = "umbacos@gmail.com"

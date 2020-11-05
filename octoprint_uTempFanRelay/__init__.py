@@ -73,6 +73,15 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
                 self.turn_fan_on()
                 self._logger.info("Switching ON: Temp=%s, Target=%s, Threshold=%s" % (actu, targ, self.tempSwitch))
 
+        try:
+            with open('/sys/bus/w1/devices/28-01144f421aaa/w1_slave', 'r') as file:
+                *data, temp=file.read().split("=")
+            self._logger.info("Temp Sensor=%s" % temp)
+            self._printer.command("M117 %s" % float(temp)/1000)
+        except ValueError:
+            # not a float for some reason, skip it
+            self._logger.info("No sensor for temperature?")
+
         return line
 
     def get_settings_defaults(self):
@@ -186,7 +195,7 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
         )
 
 __plugin_name__ = "uTempFanRelay"
-__plugin_pythoncompat__ = ">=2.7,<4"
+__plugin_pythoncompat__ = ">=3,<4"
 __plugin_implementation__ = UtempfanrelayPlugin()
 __plugin_hooks__ = {
             "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,

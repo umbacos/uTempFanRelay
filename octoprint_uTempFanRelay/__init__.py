@@ -77,7 +77,7 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
             with open('/sys/bus/w1/devices/28-01144f421aaa/w1_slave', 'r') as file:
                 *data, temp=file.read().split("=")
             self._logger.info("Temp Sensor=%s" % temp)
-            self._printer.command("M117 %s" % float(temp)/1000)
+            self._printer.commands("M117 %s°C" % float(temp)/1000)
         except ValueError:
             # not a float for some reason, skip it
             self._logger.info("No sensor for temperature?")

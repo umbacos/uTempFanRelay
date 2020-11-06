@@ -112,7 +112,7 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
             self.updateLCD()
 
     def hook_gcode_sending(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
-        self._logger.info(comm_instance + " " + cmd)
+        self._logger.info(str(comm_instance) + " " + str(phase) + " " + cmd)
 #            if gcode == "M117":
 #                self.lcdTextBase = cmd
 

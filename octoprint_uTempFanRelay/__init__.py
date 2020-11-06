@@ -17,7 +17,6 @@ from flask import make_response, jsonify
 class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
                           octoprint.plugin.SettingsPlugin,
                           octoprint.plugin.AssetPlugin,
-                          octoprint.plugin.EventHandlerPlugin,
                           octoprint.plugin.SimpleApiPlugin,
                           octoprint.plugin.TemplatePlugin):
 
@@ -34,10 +33,6 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
         self.read_settings()
         self.init_fan_pin()
 
-        self.progress = '0%'
-        self.totalLayer = '0'
-        self.currentLayer = '0'
-        self.printTimeLeft = '0h0'
         self.lcdText = ''
         self.lcdTextBase = ''
 
@@ -89,7 +84,6 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
 
     def updateLCD(self):
         lcdTextOld = self.lcdText
-        #self.lcdText = "M117 " + self.progress + " " + self.currentLayer + "/" + self.totalLayer + " " + self.printTimeLeft
         self.lcdText = self.lcdTextBase
         if self.tempEnclosureSerial:
             try:
@@ -103,16 +97,8 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
         if self.lcdText != lcdTextOld:
             self._printer.commands(self.lcdText)
 
-    def on_event(self, event, payload):
-        if event == "DisplayLayerProgress_layerChangedzzzz":
-            self.progress = payload['progress']
-            self.totalLayer = payload['totalLayer']
-            self.currentLayer = payload['currentLayer']
-            self.printTimeLeft, *secs = payload['printTimeLeft'].split("m")
-            self.updateLCD()
-
     def hook_gcode_sending(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
-        self._logger.info(str(phase) + " " + cmd)
+        #self._logger.info(str(phase) + " " + cmd)
         if (gcode == "M117") and ("^C" not in cmd):
             self.lcdTextBase = cmd
 
@@ -122,7 +108,9 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
             fanPin = 14,
             pinInverted = True,
             tempSwitch = 40.0,
-            tempEnclosureSerial = ""
+            tempEnclosureSerial = "",
+            lcdTextBase = "",
+            lcdText = ""
         )
 
     def get_settings_version(self):

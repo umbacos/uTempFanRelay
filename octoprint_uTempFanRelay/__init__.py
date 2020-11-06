@@ -89,7 +89,7 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
 
     def updateLCD(self):
         self._logger.info("inside updateLCD")
-        self.lcdText = "M117 " + self.progress + "% " + self.currentLayer + "/" + self.totalLayer + " " + self.printTimeLeft
+        lcdText = "M117 " + self.progress + "% " + self.currentLayer + "/" + self.totalLayer + " " + self.printTimeLeft
         self._logger.info(lcdText)
         self._logger.info(self.tempEnclosureSerial)
 
@@ -101,12 +101,13 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
                 self._logger.info(data)
                 tempEnclosure = int(float(data[-1]) / 1000 + 0.5)
                 self._logger.info(tempEnclosure)
-                self.lcdText += " " + tempEnclosure
+                self._logger.info(lcdText)
+                lcdText += " " + tempEnclosure
                 self._logger.info(lcdText)
         except ValueError:
             self._logger.info("ERROR - No sensor for temperature found")
 
-        self._printer.commands(self.lcdText)
+        self._printer.commands(lcdText)
 
     def on_event(self, event, payload):
         if event == "DisplayLayerProgress_layerChanged":

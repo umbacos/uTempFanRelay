@@ -40,6 +40,8 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
         self.printTimeLeft = '0'
         self.tempEnclosure = '0'
 
+        self._logger.info("about to start...")
+
         self.timer = octoprint.util.RepeatedTimer(10, self.updateLCD, run_first=True)
         self.timer.start()
 

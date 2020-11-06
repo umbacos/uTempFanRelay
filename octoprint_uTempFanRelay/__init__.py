@@ -124,7 +124,8 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
 
     def read_settings(self):
 
-        self.tempEnclosureSerial = ""
+        self.tempEnclosureSerial = self._settings.get(["tempEnclosureSerial"])
+        self._logger.info("tempEnclosureSerial= %s" % self.tempEnclosureSerial)
 
         self.enabled = self._settings.get_boolean(["enabled"])
         self._logger.info("enabled      = %s" % self.enabled)

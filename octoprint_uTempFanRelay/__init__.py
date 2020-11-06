@@ -10,6 +10,7 @@ from __future__ import absolute_import
 # Take a look at the documentation on what other plugin mixins are available.
 
 import octoprint.plugin
+import octoprint.util
 from octoprint.server import user_permission
 from flask import make_response, jsonify
 
@@ -37,6 +38,9 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
         self.totalLayer = '0'
         self.currentLayer = '0'
         self.printTimeLeft = '0'
+
+        self.timer = octoprint.util.RepeatedTimer(20, self.updateLCD, run_first=True)
+        self.timer.start()
 
         self._logger.info("uTempFanRelay STARTED!")
 
@@ -79,6 +83,9 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
                 self.turn_fan_on()
                 self._logger.info("Switching ON: Temp=%s, Target=%s, Threshold=%s" % (actu, targ, self.tempSwitch))
 
+        return line
+
+    def updateLCD(self):
         try:
             with open('/sys/bus/w1/devices/28-01144f421aaa/w1_slave', 'r') as file:
                 *data, temp=file.read().split("=")
@@ -88,19 +95,12 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
             # not a float for some reason, skip it
             self._logger.info("No sensor for temperature?")
 
-        return line
-
     def on_event(self, event, payload):
-        self._logger.info("CAPTURED %s event" % event)
-
         if event == "DisplayLayerProgress_layerChanged":
-            ## do something usefull
             self.progress = payload['progress']
             self.totalLayer = payload['totalLayer']
             self.currentLayer = payload['currentLayer']
-            self.printTimeLeft = payload['printTimeLeft']
-            self._logger.info("M117 %s%% %s/%s %s" % (self.progress, self.currentLayer, self.totalLayer, self.printTimeLeft))
-
+            *self.printTimeLeft, secs = payload['printTimeLeft'].split("m")
 
     def get_settings_defaults(self):
         return dict(

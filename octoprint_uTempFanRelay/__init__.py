@@ -89,18 +89,18 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
         try:
             with open('/sys/bus/w1/devices/28-01144f421aaa/w1_slave', 'r') as file:
                 *data, temp=file.read().split("=")
-            # self._logger.info("Temp Sensor=%s" % temp)
-            self._printer.commands("M117 %s%% %s/%s %s %s^C" % (self.progress, self.currentLayer, self.totalLayer, self.printTimeLeft, int(float(temp) / 1000 + 0.5)))
         except ValueError:
-            # not a float for some reason, skip it
             self._logger.info("No sensor for temperature?")
+
+        self._printer.commands("M117 %s%% %s/%s %s %s^C" % (self.progress, self.currentLayer, self.totalLayer, self.printTimeLeft, int(float(temp) / 1000 + 0.5)))
 
     def on_event(self, event, payload):
         if event == "DisplayLayerProgress_layerChanged":
             self.progress = payload['progress']
             self.totalLayer = payload['totalLayer']
             self.currentLayer = payload['currentLayer']
-            *self.printTimeLeft, secs = payload['printTimeLeft'].split("m")
+            self.printTimeLeft, *secs = payload['printTimeLeft'].split("m")
+            self.updateLCD()
 
     def get_settings_defaults(self):
         return dict(

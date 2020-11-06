@@ -91,8 +91,9 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
         self._logger.info("inside updateLCD")
         lcdText = "M117 " + self.progress + "% " + self.currentLayer + "/" + self.totalLayer + " " + self.printTimeLeft
         self._logger.info(lcdText)
+        self._logger.info(self.tempEnclosureSerial)
 
-        if self.tempEnclosureSerial:
+        if self.tempEnclosureSerial != "":
             try:
                 fileName = "/sys/bus/w1/devices/" + self.tempEnclosureSerial + "/w1_slave"
                 with open(fileName, 'r') as file:

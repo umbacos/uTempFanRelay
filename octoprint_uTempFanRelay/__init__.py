@@ -98,8 +98,12 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
                     lcdText = lcdText + " " + self.tempEnclosure
 
             except ValueError:
-                self._logger.info("No sensor for temperature found")
+                self._logger.info("ERROR - No sensor for temperature found")
+        else:
+            self._logger.info("No sensor for temperature defined")
 
+
+        self._logger.info("Screen /logging: %s" % lcdText)
         self._printer.commands(lcdText)
 
     def on_event(self, event, payload):

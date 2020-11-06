@@ -95,7 +95,7 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
                 with open(fileName, 'r') as file:
                     data = file.read().split("=")
                     tempEnclosure = int(float(data[-1]) / 1000 + 0.5)
-                    lcdText += " " + str(tempEnclosure) + "\xcaC"
+                    lcdText += " " + str(tempEnclosure) + "\xc0C"
             except ValueError:
                 self._logger.info("No sensor for temperature found")
         self._printer.commands(lcdText)

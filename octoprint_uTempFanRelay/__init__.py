@@ -38,6 +38,7 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
         self.totalLayer = '0'
         self.currentLayer = '0'
         self.printTimeLeft = '0'
+        self.tempEnclosure = '0'
 
         self.timer = octoprint.util.RepeatedTimer(20, self.updateLCD, run_first=True)
         self.timer.start()
@@ -86,13 +87,20 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
         return line
 
     def updateLCD(self):
-        try:
-            with open('/sys/bus/w1/devices/28-01144f421aaa/w1_slave', 'r') as file:
-                *data, temp=file.read().split("=")
-        except ValueError:
-            self._logger.info("No sensor for temperature?")
+        lcdText = "M117 " + self.progress + " " + self.currentLayer + "/" + self.totalLayer + " " + self.printTimeLeft
 
-        self._printer.commands("M117 %s%% %s/%s %s %s^C" % (self.progress, self.currentLayer, self.totalLayer, self.printTimeLeft, int(float(temp) / 1000 + 0.5)))
+        if self.tempEnclosureSerial:
+            try:
+                fileName = "/sys/bus/w1/devices/" + self.tempEnclosureSerial + "/w1_slave"
+                with open(fileName, 'r') as file:
+                    data = file.read().split("=")
+                    self.tempEnclosure = int(float(data[-1]) / 1000 + 0.5)
+                    lcdText = lcdText + " " + self.tempEnclosure
+
+            except ValueError:
+                self._logger.info("No sensor for temperature found")
+
+        self._printer.commands(lcdText)
 
     def on_event(self, event, payload):
         if event == "DisplayLayerProgress_layerChanged":
@@ -107,13 +115,17 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
             enabled = False,
             fanPin = 14,
             pinInverted = True,
-            tempSwitch = 40.0
+            tempSwitch = 40.0,
+            tempEnclosureSerial = ""
         )
 
     def get_settings_version(self):
         return 1
 
     def read_settings(self):
+
+        self.tempEnclosureSerial = ""
+
         self.enabled = self._settings.get_boolean(["enabled"])
         self._logger.info("enabled      = %s" % self.enabled)
 

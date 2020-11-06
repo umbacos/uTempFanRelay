@@ -46,7 +46,7 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
 
         self._logger.info("uTempFanRelay STARTED!")
 
-    def hook(self, comm_instance, line, *args, **kwargs):
+    def hook_gcode_received(self, comm_instance, line, *args, **kwargs):
 
         if 'enabled' not in self.__dict__:
             self._logger.info("TOO EARLY!!!")
@@ -95,7 +95,7 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
                 with open(fileName, 'r') as file:
                     data = file.read().split("=")
                     tempEnclosure = int(float(data[-1]) / 1000 + 0.5)
-                    lcdText += " " + str(tempEnclosure) + "\xc0C"
+                    lcdText += " " + str(tempEnclosure) + "^C"
             except ValueError:
                 self._logger.info("No sensor for temperature found")
         self._printer.commands(lcdText)
@@ -106,10 +106,10 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
             self.totalLayer = payload['totalLayer']
             self.currentLayer = payload['currentLayer']
             self.printTimeLeft, *secs = payload['printTimeLeft'].split("m")
-            self._logger.info("About to update LCD, on_event...")
             self.updateLCD()
-            self._logger.info("done...")
 
+    def hook_gcode_sending(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
+            self._logger.info(gcode)
 
     def get_settings_defaults(self):
         return dict(
@@ -231,5 +231,6 @@ __plugin_pythoncompat__ = ">=3,<4"
 __plugin_implementation__ = UtempfanrelayPlugin()
 __plugin_hooks__ = {
             "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,
-            "octoprint.comm.protocol.gcode.received": __plugin_implementation__.hook
+            "octoprint.comm.protocol.gcode.received": __plugin_implementation__.hook_gcode_received,
+            "octoprint.comm.protocol.gcode.sending": __plugin_implementation__.hook_gcode_sending,
             }

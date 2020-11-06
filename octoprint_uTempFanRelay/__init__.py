@@ -100,8 +100,8 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
                     self.lcdText += " " + str(tempEnclosure) + "^C"
             except ValueError:
                 self._logger.info("No sensor for temperature found")
-        if self.lcdText != lcdTextOld:
-            self._printer.commands(self.lcdText)
+        #if self.lcdText != lcdTextOld:
+        self._printer.commands(self.lcdText)
 
     def on_event(self, event, payload):
         if event == "DisplayLayerProgress_layerChanged":
@@ -112,7 +112,7 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
             self.updateLCD()
 
     def hook_gcode_sending(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
-            self._logger.info(comm_instance)
+            self._logger.info(comm_instance + " " + phase + " " + cmd + " " + args)
 #            if gcode == "M117":
 #                self.lcdTextBase = cmd
 

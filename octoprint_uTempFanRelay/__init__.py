@@ -40,7 +40,7 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
         self.printTimeLeft = '0'
         self.tempEnclosure = '0'
 
-        self.timer = octoprint.util.RepeatedTimer(20, self.updateLCD, run_first=True)
+        self.timer = octoprint.util.RepeatedTimer(10, self.updateLCD, run_first=True)
         self.timer.start()
 
         self._logger.info("uTempFanRelay STARTED!")
@@ -87,7 +87,7 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
         return line
 
     def updateLCD(self):
-        lcdText = "M117 " + self.progress + " " + self.currentLayer + "/" + self.totalLayer + " " + self.printTimeLeft
+        lcdText = "M117 " + self.progress + "% " + self.currentLayer + "/" + self.totalLayer + " " + self.printTimeLeft
 
         if self.tempEnclosureSerial:
             try:
@@ -102,7 +102,6 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
         else:
             self._logger.info("No sensor for temperature defined")
 
-
         self._logger.info("Screen /logging: %s" % lcdText)
         self._printer.commands(lcdText)
 
@@ -112,7 +111,10 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
             self.totalLayer = payload['totalLayer']
             self.currentLayer = payload['currentLayer']
             self.printTimeLeft, *secs = payload['printTimeLeft'].split("m")
+            self._logger.info("About to update LCD, on_event...")
             self.updateLCD()
+            self._logger.info("done...")
+
 
     def get_settings_defaults(self):
         return dict(

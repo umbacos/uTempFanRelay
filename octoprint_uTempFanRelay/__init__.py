@@ -38,8 +38,8 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
         self.totalLayer = '0'
         self.currentLayer = '0'
         self.printTimeLeft = '0h0'
-
-        self._logger.info("about to start...")
+        self.lcdText = ''
+        self.lcdTextBase = ''
 
         self.timer = octoprint.util.RepeatedTimer(10, self.updateLCD, run_first=True)
         self.timer.start()
@@ -88,19 +88,20 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
         return line
 
     def updateLCD(self):
-        lcdTextOld = lcdText
-        lcdText = "M117 " + self.progress + " " + self.currentLayer + "/" + self.totalLayer + " " + self.printTimeLeft
+        lcdTextOld = self.lcdText
+        self.lcdText = "M117 " + self.progress + " " + self.currentLayer + "/" + self.totalLayer + " " + self.printTimeLeft
+        #self.lcdText = self.lcdTextBase
         if self.tempEnclosureSerial:
             try:
                 fileName = "/sys/bus/w1/devices/" + self.tempEnclosureSerial + "/w1_slave"
                 with open(fileName, 'r') as file:
                     data = file.read().split("=")
                     tempEnclosure = int(float(data[-1]) / 1000 + 0.5)
-                    lcdText += " " + str(tempEnclosure) + "^C"
+                    self.lcdText += " " + str(tempEnclosure) + "^C"
             except ValueError:
                 self._logger.info("No sensor for temperature found")
-        if lcdText != lcdTextOld:
-            self._printer.commands(lcdText)
+        if self.lcdText != lcdTextOld:
+            self._printer.commands(self.lcdText)
 
     def on_event(self, event, payload):
         if event == "DisplayLayerProgress_layerChanged":
@@ -111,7 +112,9 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
             self.updateLCD()
 
     def hook_gcode_sending(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
-            self._logger.info(gcode + " " + cmd)
+            self._logger.info(comm_instance)
+#            if gcode == "M117":
+#                self.lcdTextBase = cmd
 
     def get_settings_defaults(self):
         return dict(

@@ -88,25 +88,15 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
         return line
 
     def updateLCD(self):
-        self._logger.info("inside updateLCD")
-        lcdText = "M117 " + self.progress + "% " + self.currentLayer + "/" + self.totalLayer + " " + self.printTimeLeft
-        self._logger.info(lcdText)
-        self._logger.info(self.tempEnclosureSerial)
-
+        lcdText = "M117 " + self.progress + " " + self.currentLayer + "/" + self.totalLayer + " " + self.printTimeLeft
         try:
             fileName = "/sys/bus/w1/devices/" + self.tempEnclosureSerial + "/w1_slave"
-            self._logger.info(fileName)
             with open(fileName, 'r') as file:
                 data = file.read().split("=")
-                self._logger.info(data)
                 tempEnclosure = int(float(data[-1]) / 1000 + 0.5)
-                self._logger.info(tempEnclosure)
-                self._logger.info(lcdText)
-                lcdText += " " + tempEnclosure
-                self._logger.info(lcdText)
+                lcdText += " " + str(tempEnclosure)
         except ValueError:
             self._logger.info("ERROR - No sensor for temperature found")
-
         self._printer.commands(lcdText)
 
     def on_event(self, event, payload):

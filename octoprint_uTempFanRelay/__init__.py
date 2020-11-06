@@ -16,6 +16,7 @@ from flask import make_response, jsonify
 class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
                           octoprint.plugin.SettingsPlugin,
                           octoprint.plugin.AssetPlugin,
+                          octoprint.plugin.EventHandlerPlugin,
                           octoprint.plugin.SimpleApiPlugin,
                           octoprint.plugin.TemplatePlugin):
 

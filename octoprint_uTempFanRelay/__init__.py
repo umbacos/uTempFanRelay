@@ -101,6 +101,7 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
         #self._logger.info(str(phase) + " " + cmd)
         if (gcode == "M117") and ("^C" not in cmd):
             self.lcdTextBase = cmd
+            cmd += "ciccio"
 
     def get_settings_defaults(self):
         return dict(

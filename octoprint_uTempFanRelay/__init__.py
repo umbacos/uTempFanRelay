@@ -34,9 +34,9 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
         self.init_fan_pin()
 
         self.lcdText = ''
-        self.lcdTextBase = ''
+        self.lcdTemp = ''
 
-        self.timer = octoprint.util.RepeatedTimer(10, self.updateLCD, run_first=True)
+        self.timer = octoprint.util.RepeatedTimer(10, self.updateEnclosureTemp, run_first=True)
         self.timer.start()
 
         self._logger.info("uTempFanRelay STARTED!")
@@ -82,26 +82,26 @@ class UtempfanrelayPlugin(octoprint.plugin.StartupPlugin,
 
         return line
 
-    def updateLCD(self):
-        lcdTextOld = self.lcdText
-        self.lcdText = self.lcdTextBase
+    def updateEnclosureTemp(self):
+        lcdTempOld = self.lcdTemp
         if self.tempEnclosureSerial:
             try:
                 fileName = "/sys/bus/w1/devices/" + self.tempEnclosureSerial + "/w1_slave"
                 with open(fileName, 'r') as file:
                     data = file.read().split("=")
-                    tempEnclosure = int(float(data[-1]) / 1000 + 0.5)
-                    self.lcdText += " " + str(tempEnclosure) + "^C"
+                    tempEnclosure = float(int(float(data[-1]) / 100 + 0.5))/10.0
+                    self.lcdTemp = " " + str(tempEnclosure) + "^C"
             except ValueError:
-                self._logger.info("No sensor for temperature found")
-        if self.lcdText != lcdTextOld:
-            self._printer.commands(self.lcdText)
+                self._logger.info("Temperature sensor with serial code " + self.tempEnclosureSerial + " not found. Check the code")
+        if self.lcdTemp != lcdTempOld:
+            self._printer.commands(self.lcdText + self.lcdTemp)
 
-    def hook_gcode_sending(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
+    def hook_gcode_queuing(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
         #self._logger.info(str(phase) + " " + cmd)
         if (gcode == "M117") and ("^C" not in cmd):
-            self.lcdTextBase = cmd
-            cmd += "ciccio"
+            self.lcdText = cmd
+            cmd += self.lcdTemp
+        return cmd,
 
     def get_settings_defaults(self):
         return dict(
@@ -226,5 +226,5 @@ __plugin_implementation__ = UtempfanrelayPlugin()
 __plugin_hooks__ = {
             "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,
             "octoprint.comm.protocol.gcode.received": __plugin_implementation__.hook_gcode_received,
-            "octoprint.comm.protocol.gcode.sending": __plugin_implementation__.hook_gcode_sending,
+            "octoprint.comm.protocol.gcode.queuing": __plugin_implementation__.hook_gcode_queuing,
             }
